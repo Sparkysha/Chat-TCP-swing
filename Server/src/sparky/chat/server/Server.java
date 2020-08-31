@@ -25,16 +25,23 @@ public class Server {
         while (serverIsStarted) {
             try {
                 Socket socket = ss.accept();
-                sendToAll(socket.getInetAddress() + " is coming...");
-                connections.add(new Connection(socket, this));
+                Connection connection = new Connection(socket, this);
+                sendToAll(socket.getInetAddress() + " is coming...", connection);
+                connections.add(connection);
             } catch (IOException e) {
                 printExc(e);
                 e.printStackTrace();
             }
         }
     }
-    void sendToAll(String msg) {
+    synchronized void sendToAll(String msg, Connection connect) {
         serverGUI.printMsg(msg);
+        if (msg == null || msg.equals("/exit")) {
+            connect.disconnect();
+            connect.sendMsg("[SERVER]You are outing...");
+            removeConnection(connect);
+            sendToAll("is leaving us...", connect);
+        }
         for (Connection connection : connections) {
             connection.sendMsg(msg);
         }
@@ -42,7 +49,7 @@ public class Server {
     void removeConnection(Connection connection) {
         connections.remove(connection);
     }
-    void printExc(Exception e) {
+    synchronized void printExc(Exception e) {
         String error = "[SERVER]Exception: " + e.getMessage();
         serverGUI.printMsg(error);
     }

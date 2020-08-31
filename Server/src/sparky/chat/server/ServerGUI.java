@@ -9,6 +9,7 @@ public class ServerGUI extends JFrame {
     private final JPanel panel = new JPanel();
     private final JButton start = new JButton("Start");
 
+    private JDialog dialog;
     private final JTextField portInput = new JTextField();
     private final JLabel label = new JLabel("Enter port:");
     private final JButton ok = new JButton("OK");
@@ -31,10 +32,10 @@ public class ServerGUI extends JFrame {
         portInput.setText("8585");
         ok.addActionListener(actionEvent -> {
             port = Integer.valueOf(portInput.getText());
-            dispose();
+            dialog.dispose();
         });
         start.addActionListener(actionEvent -> {
-            JDialog dialog = new JDialog(this, true);
+            dialog = new JDialog(this, true);
             dialog.setSize(150, 150);
             dialog.setLocationRelativeTo(null);
             dialog.add(label, BorderLayout.NORTH);

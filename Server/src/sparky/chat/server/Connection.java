@@ -16,28 +16,32 @@ public class Connection {
         try {
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (!thread.isInterrupted()) {
+                        try {
+                            server.sendToAll(reader.readLine(), Connection.this);
+                        } catch (IOException e) {
+                            server.printExc(e);
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            thread.start();
         } catch (IOException e) {
             server.printExc(e);
-            e.printStackTrace();
-        }
-        thread = new Thread(() -> {
-            while (!thread.isInterrupted()) {
-                try {
-                    String msg = reader.readLine();
-                    System.out.println(msg);
-                    if (msg == null || msg.equals("/exit")) {
-                        sendMsg("[SERVER]You are disconnecting...");
-                        drop();
-                    }
-                    else
-                        server.sendToAll(msg);
-                } catch (IOException e) {
-                    server.printExc(e);
-                    e.printStackTrace();
-                }
+        } finally {
+            try {
+                if (writer != null)
+                    writer.close();
+                if (reader != null)
+                    reader.close();
+            } catch (IOException e) {
+                server.printExc(e);
             }
-        });
-        thread.start();
+        }
     }
     void sendMsg(String msg) {
         try {
@@ -49,16 +53,14 @@ public class Connection {
             e.printStackTrace();
         }
     }
-    void drop() {
+    void disconnect() {
         thread.interrupt();
-        try {
-            reader.close();
-            writer.close();
-            server.removeConnection(this);
-            socket.close();
-        } catch (IOException  e) {
-            server.printExc(e);
-            e.printStackTrace();
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                server.printExc(e);
+            }
         }
     }
 }
