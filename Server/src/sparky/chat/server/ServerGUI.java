@@ -5,9 +5,11 @@ import java.awt.*;
 
 public class ServerGUI extends JFrame {
     private int port = 8585;
+    private volatile Server server;
     private final JTextArea log = new JTextArea();
     private final JPanel panel = new JPanel();
     private final JButton start = new JButton("Start");
+    private final JButton stop = new JButton("Stop");
 
     private JDialog dialog;
     private final JTextField portInput = new JTextField();
@@ -45,6 +47,8 @@ public class ServerGUI extends JFrame {
             new Thread(() -> new Server(port, ServerGUI.this)).start();
         });
         panel.add(start);
+        stop.addActionListener(actionEvent -> System.out.println(server));
+        panel.add(stop);
         add(panel, BorderLayout.SOUTH);
     }
     synchronized void printMsg(String msg) {
