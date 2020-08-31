@@ -9,19 +9,22 @@ public class User {
     private Thread thread;
     private BufferedWriter writer;
     private BufferedReader reader;
+    private String name;
 
     User(Socket socket, Server server) throws IOException {
         this.socket = socket;
         this.server = server;
+        name = new String(socket.getInetAddress() + ":" + socket.getPort() + ": ").substring(1);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        server.sendToAll(name + "is coming", this);
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!thread.isInterrupted()) {
                     try {
                         String msg = reader.readLine();
-                        server.sendToAll(msg, User.this);
+                        server.sendToAll(name + msg, User.this);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -51,5 +54,8 @@ public class User {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    String getName() {
+        return this.name;
     }
 }

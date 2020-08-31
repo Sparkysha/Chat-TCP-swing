@@ -19,7 +19,7 @@ public class Server {
                 Socket socket = ss.accept();
                 User user = new User(socket, this);
                 users.add(user);
-                sendToAll(socket.getInetAddress() + ":" + socket.getPort() + " is coming", user);
+                //sendToAll(socket.getInetAddress() + ":" + socket.getPort() + " is coming", user);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -30,9 +30,9 @@ public class Server {
         serverGUI.printMsg(msg);
     }
     void sendToAll(String msg, User fromUser) {
-        if (msg == null || msg.equals("/exit")) {
+        if (msg.endsWith("null") || msg.endsWith("/exit")) {
             drop(fromUser);
-            msg = "User is leaving us";
+            msg = fromUser.getName() + "has leaving us";
         }
         String finalMsg = msg;
         sendToServer(finalMsg);
