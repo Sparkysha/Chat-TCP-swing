@@ -23,7 +23,7 @@ public class ClientGUI extends JFrame {
     private final JLabel portEnter = new JLabel("Enter port:");
     private final JTextField portInput = new JTextField("8585");
     private final JLabel nameEnter = new JLabel("Your name:");
-    private final JTextField nameInput = new JTextField();
+    private final JTextField nameInput = new JTextField("Guest");
     private final JButton ok = new JButton("OK");
 
     public static void main(String[] args) {

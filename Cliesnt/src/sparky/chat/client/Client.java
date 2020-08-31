@@ -19,7 +19,7 @@ public class Client {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
-            e.printStackTrace();
+            printExcep(e);
         }
         sendMsg("/name" + name);
         thread = new Thread(() -> {
@@ -29,7 +29,7 @@ public class Client {
                     String msg = reader.readLine();
                     clientGUI.printMsg(msg);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    printExcep(e);
                 }
             }
         });
@@ -42,7 +42,7 @@ public class Client {
             writer.newLine();
             writer.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            printExcep(e);
         }
     }
     void drop() {
@@ -58,5 +58,10 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    void printExcep(Exception e) {
+        String error = "[CLIENT]Exception: " + e.getMessage();
+        clientGUI.printMsg(error);
+        e.printStackTrace();
     }
 }
