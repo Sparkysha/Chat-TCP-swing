@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Server {
     private final ArrayList<User> users = new ArrayList<>();
-    private ServerGUI serverGUI;
+    private final ServerGUI serverGUI;
     private ServerSocket ss;
 
     Server(int port, ServerGUI serverGUI) {
@@ -35,13 +35,11 @@ public class Server {
         }
         String finalMsg = msg;
         sendToServer(finalMsg);
-        users.forEach(user -> {
-            user.printMsg(finalMsg);
-        });
+        users.forEach(user -> user.printMsg(finalMsg));
     }
     void drop(User user) {
         users.remove(user);
-        user.printMsg("You are disconnected");
+        user.printMsg("[SERVER]You are disconnected");
         user.disconnect();
     }
 }

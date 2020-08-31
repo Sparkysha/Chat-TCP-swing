@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class ServerGUI extends JFrame {
     private int port = 8585;
-    private volatile Server server;
+    private Server server;
     private final JTextArea log = new JTextArea();
     private final JPanel panel = new JPanel();
     private final JButton start = new JButton("Start");
@@ -33,7 +33,7 @@ public class ServerGUI extends JFrame {
 
         portInput.setText("8585");
         ok.addActionListener(actionEvent -> {
-            port = Integer.valueOf(portInput.getText());
+            port = Integer.parseInt(portInput.getText());
             dialog.dispose();
         });
         start.addActionListener(actionEvent -> {

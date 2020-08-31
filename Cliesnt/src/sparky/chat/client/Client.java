@@ -8,7 +8,7 @@ public class Client {
     private Thread thread;
     private BufferedReader reader;
     private BufferedWriter writer;
-    private ClientGUI clientGUI;
+    private final ClientGUI clientGUI;
     private String name;
 
     Client(String ip, int port, ClientGUI clientGUI, String name) {

@@ -4,12 +4,12 @@ import java.io.*;
 import java.net.Socket;
 
 public class User {
-    private Socket socket;
-    private Server server;
-    private Thread thread;
-    private BufferedWriter writer;
-    private BufferedReader reader;
-    private String name;
+    private final Socket socket;
+    private final Server server;
+    private final Thread thread;
+    private final BufferedWriter writer;
+    private final BufferedReader reader;
+    private final String name;
 
     User(Socket socket, Server server) throws IOException {
         this.socket = socket;
@@ -18,7 +18,7 @@ public class User {
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String getName = reader.readLine();
         if (getName.startsWith("/name") && getName.length() > 6) this.name = getName.substring(5) + ": ";
-        else this.name = new String(socket.getInetAddress() + ":" + socket.getPort() + ": ").substring(1);
+        else this.name = (socket.getInetAddress() + ":" + socket.getPort() + ": ").substring(1);
         server.sendToAll(name + "is coming", this);
         thread = new Thread(new Runnable() {
             @Override
