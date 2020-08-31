@@ -2,8 +2,6 @@ package sparky.chat.client;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class ClientGUI extends JFrame {
     private final JTextArea log = new JTextArea();
