@@ -19,7 +19,6 @@ public class Server {
                 Socket socket = ss.accept();
                 User user = new User(socket, this);
                 users.add(user);
-                //sendToAll(socket.getInetAddress() + ":" + socket.getPort() + " is coming", user);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -14,9 +14,11 @@ public class User {
     User(Socket socket, Server server) throws IOException {
         this.socket = socket;
         this.server = server;
-        name = new String(socket.getInetAddress() + ":" + socket.getPort() + ": ").substring(1);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String getName = reader.readLine();
+        if (getName.startsWith("/name") && getName.length() > 6) this.name = getName.substring(5) + ": ";
+        else this.name = new String(socket.getInetAddress() + ":" + socket.getPort() + ": ").substring(1);
         server.sendToAll(name + "is coming", this);
         thread = new Thread(new Runnable() {
             @Override
