@@ -27,7 +27,8 @@ public class Client {
             while (!thread.isInterrupted()) {
                 try {
                     String msg = reader.readLine();
-                    clientGUI.printMsg(msg);
+                    if (msg == null) drop();
+                    else clientGUI.printMsg(msg);
                 } catch (IOException e) {
                     printExcep(e);
                 }

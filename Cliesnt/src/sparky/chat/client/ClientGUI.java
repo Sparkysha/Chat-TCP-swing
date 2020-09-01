@@ -74,8 +74,10 @@ public class ClientGUI extends JFrame {
 
         send.addActionListener(actionEvent -> {
             String msg = input.getText();
-            if (client != null && !msg.equals(""))
+            if (client != null && !msg.equals("") && !msg.equals("/exit"))
                 client.sendMsg(msg);
+            else if (client != null && msg.equals("/exit"))
+                disconnect.doClick();
             else
                 printMsg(msg);
             input.setText(null);

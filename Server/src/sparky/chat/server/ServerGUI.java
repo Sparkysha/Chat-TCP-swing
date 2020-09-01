@@ -44,12 +44,13 @@ public class ServerGUI extends JFrame {
             dialog.add(portInput, BorderLayout.CENTER);
             dialog.add(ok, BorderLayout.SOUTH);
             dialog.setVisible(true);
-            new Thread(() -> new Server(port, ServerGUI.this)).start();
+            new Thread(() -> server.startServer(port)).start();
         });
         panel.add(start);
-        stop.addActionListener(actionEvent -> System.out.println(server));
+        stop.addActionListener(actionEvent -> server.stopServer());
         panel.add(stop);
         add(panel, BorderLayout.SOUTH);
+        server = new Server(this);
     }
     synchronized void printMsg(String msg) {
         SwingUtilities.invokeLater(() -> {

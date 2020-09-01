@@ -41,6 +41,7 @@ public class User {
             writer.newLine();
             writer.flush();
         } catch (IOException e) {
+            server.sendToServer("[EXCEPTION]Write to user" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -51,13 +52,21 @@ public class User {
                 reader.close();
             if (writer != null)
                 writer.close();
-            if (socket != null)
+            if (socket != null) {
+                socket.shutdownInput();
+                socket.shutdownOutput();
                 socket.close();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            server.sendToServer("[EXCEPTION]Read close: " + e.getMessage());
         }
     }
     String getName() {
         return this.name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
