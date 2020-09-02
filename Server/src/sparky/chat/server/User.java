@@ -19,7 +19,7 @@ public class User {
         String getName = reader.readLine(); //Получение имени
         if (getName.startsWith("/name") && getName.length() > 6) this.name = getName.substring(5) + ": ";
         else this.name = (socket.getInetAddress() + ":" + socket.getPort() + ": ").substring(1); //ИП:ПОРТ если имя не введено
-        printMsg("[SERVER]You are connected");
+        sendMsg("[SERVER]You are connected");
         server.sendToAll(name + "is coming", this); //Уведомление всех о новом подключении
         thread = new Thread(new Runnable() { //Прослушка этого сокета
             @Override
@@ -37,7 +37,7 @@ public class User {
         });
         thread.start();
     }
-    void printMsg(String msg) {
+    void sendMsg(String msg) {
         try {
             writer.write(msg);
             writer.newLine();

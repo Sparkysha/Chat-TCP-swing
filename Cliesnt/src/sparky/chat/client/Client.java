@@ -22,15 +22,15 @@ public class Client {
             printExcep(e);
         }
         if (socket != null) {
-            sendMsg("/name" + name);
+            sendMsg("/name" + name); //Отправка имени
             thread = new Thread(() -> {
                 clientGUI.setClient(Client.this);
                 while (!thread.isInterrupted()) {
                     try {
                         String msg = reader.readLine();
-                        if (msg == null || msg.equals("/goOut")) {
-                            clientGUI.disconnect.doClick();
-                        } else clientGUI.printMsg(msg);
+                        if (msg == null || msg.equals("/goOut")) clientGUI.disconnect.doClick(); //Сервер отключился(ается)
+                        if (msg.startsWith("/ru")) clientGUI.showUsers(msg.substring(3).replace( ": ", "\n")); //Список юзеров обновился
+                        else clientGUI.printMsg(msg);
                     } catch (IOException e) {
                         printExcep(e);
                     }

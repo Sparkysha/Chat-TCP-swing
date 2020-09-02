@@ -3,10 +3,9 @@ package sparky.chat.client;
 import javax.swing.*;
 import java.awt.*;
 
-import static javax.swing.JScrollPane.*;
-
 public class ClientGUI extends JFrame {
     private final JTextArea log = new JTextArea();
+    private final JTextArea online = new JTextArea();
     private final JPanel mainPanel = new JPanel();
     private final JPanel buttPanel = new JPanel();
     private final JTextField input = new JTextField();
@@ -29,7 +28,7 @@ public class ClientGUI extends JFrame {
     private final JButton ok = new JButton("OK");
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ClientGUI());
+        SwingUtilities.invokeLater(ClientGUI::new);
     }
     private ClientGUI() {
         setSize(600,400);
@@ -42,8 +41,10 @@ public class ClientGUI extends JFrame {
 
         log.setEditable(false);
         log.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(log);
-        add(scrollPane);
+        add(new JScrollPane(log));
+        online.setEditable(false);
+        online.setLineWrap(true);
+        add(new JScrollPane(online), BorderLayout.EAST);
 
         ok.addActionListener(actionEvent -> {
             ip = ipInput.getText();
@@ -73,6 +74,7 @@ public class ClientGUI extends JFrame {
             if (client != null) {
                 client.drop();
                 client = null;
+                online.setText(null);
             }
         });
 
@@ -105,5 +107,11 @@ public class ClientGUI extends JFrame {
 
     synchronized void printMsg(String msg) {
         SwingUtilities.invokeLater(() -> log.append(msg + "\n"));
+    }
+    void showUsers(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            online.setText(null);
+            online.append(msg);
+        });
     }
 }

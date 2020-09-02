@@ -10,6 +10,7 @@ public class Server {
     private final ServerGUI serverGUI;
     private ServerSocket ss;
     private boolean serverIsStarted;
+    private String onlineUsers = "";
 
     Server(ServerGUI serverGUI) {
         this.serverGUI = serverGUI;
@@ -22,11 +23,16 @@ public class Server {
         } catch (IOException e) {
             sendToServer("[ERROR]Server is not started");
         }
-        while (serverIsStarted) {
+        while (serverIsStarted) { //Прослушка новых подключений
             try {
                 Socket socket = ss.accept();
-                if (serverIsStarted)
-                    users.add(new User(socket, Server.this));
+                if (serverIsStarted) {
+                    User user = new User(socket, Server.this);
+                    users.add(user);
+                    onlineUsers += user.getName(); //Строка для ридлайна
+                    sendToAll("/ru" + onlineUsers, null); //Отправить всем
+                    serverGUI.showUsers(onlineUsers.replace( ": ", "\n")); //Обновить у себя
+                }
             } catch (IOException e) {
                 sendToServer("[EXCEPTION]Accept: " + e.getMessage());
             }
@@ -67,16 +73,21 @@ public class Server {
         if (msg.endsWith("null") || msg.endsWith("/exit")) { //Если юзер отключился или желает отключиться
             sendToServer(msg);
             drop(fromUser);
-            users.forEach(user -> user.printMsg("[SERVER]" + fromUser.getName() + "has leaving us")); //Уведомление оставшихся
+            users.forEach(user -> user.sendMsg("[SERVER]" + fromUser.getName() + " has leaving us")); //Уведомление оставшихся
+            users.forEach(user -> user.sendMsg("/ru" + onlineUsers)); //Отправка обновленного списка
         } else {
             sendToServer(msg);
-            users.forEach(user -> user.printMsg(msg)); //Отправить всем
+            users.forEach(user -> user.sendMsg(msg)); //Отправить всем
         }
     }
     //Отключение юзера
-    void drop(User user) {
+    synchronized void drop(User user) {
         users.remove(user);
-        user.printMsg("[SERVER]You are disconnected");
-        user.disconnect();
+        user.sendMsg("[SERVER]You are disconnected");
+        if (onlineUsers.contains(user.getName())) { //Удаление из списка онлайн
+            onlineUsers = onlineUsers.replaceFirst(user.getName(), "");
+            serverGUI.showUsers(onlineUsers.replace( ": ", "\n"));
+        }
+        user.disconnect(); //Закрытие сокета
     }
 }

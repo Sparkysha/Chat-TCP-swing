@@ -7,6 +7,7 @@ public class ServerGUI extends JFrame {
     private int port = 8585;
     private Server server;
     private final JTextArea log = new JTextArea();
+    private final JTextArea online = new JTextArea();
     private final JPanel panel = new JPanel();
     private final JButton start = new JButton("Start");
     private final JButton stop = new JButton("Stop");
@@ -17,7 +18,7 @@ public class ServerGUI extends JFrame {
     private final JButton ok = new JButton("OK");
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ServerGUI());
+        SwingUtilities.invokeLater(ServerGUI::new);
     }
     private ServerGUI() {
         setSize(600,400);
@@ -29,8 +30,11 @@ public class ServerGUI extends JFrame {
 
         log.setEditable(false);
         log.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(log);
-        add(scrollPane);
+        add(new JScrollPane(log));
+
+        online.setEditable(false);
+        online.setLineWrap(true);
+        add(new JScrollPane(online), BorderLayout.EAST);
 
         portInput.setText("8585");
         ok.addActionListener(actionEvent -> {
@@ -54,9 +58,12 @@ public class ServerGUI extends JFrame {
         server = new Server(this);
     }
     synchronized void printMsg(String msg) {
+        SwingUtilities.invokeLater(() -> log.append(msg + "\n"));
+    }
+    void showUsers(String msg) {
         SwingUtilities.invokeLater(() -> {
-            log.append(msg + "\n");
-            //log.setCaretPosition(log.getDocument().getLength());
+            online.setText(null);
+            online.append(msg);
         });
     }
 }
