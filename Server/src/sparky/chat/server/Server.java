@@ -32,33 +32,48 @@ public class Server {
             }
         }
     }
+    //Остановка
     void stopServer() {
+        if (ss == null) return; //При повторном нажатии
         serverIsStarted = false;
-        users.forEach((user -> user.disconnect()));
-        users.clear();
-        if (ss != null && !ss.isClosed()) {
+        sendToAll("[SERVER]Server stopping...", null); //Уведомить всех об остановке
+        sendToAll("/goOut", null); //Отправить всем флаг для получения респонса "/exit"
+        while (true) { //Ждать пока все не отключатся
             try {
-                ss.close();
-            } catch (IOException e) {
-                sendToServer("[EXCEPTION]ServerSocket close: " + e.getMessage());
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (users.isEmpty()) {
+                try {
+                    ss.close();
+                    ss = null;
+                    sendToServer("Server stopped");
+                } catch (IOException e) {
+                    sendToServer("[ERROR]ServerSocket close: " + e.getMessage());
+                } finally {
+                    break;
+                }
             }
         }
-        ss = null;
-        sendToServer("Server stopped");
     }
+    //Сокращение
     void sendToServer(String msg) {
         System.out.println(msg);
         serverGUI.printMsg(msg);
     }
-    void sendToAll(String msg, User fromUser) {
-        if (msg.endsWith("null") || msg.endsWith("/exit")) {
+    //Отправка всем
+    synchronized void sendToAll(String msg, User fromUser) {
+        if (msg.endsWith("null") || msg.endsWith("/exit")) { //Если юзер отключился или желает отключиться
+            sendToServer(msg);
             drop(fromUser);
-            users.forEach(user -> user.printMsg("[SERVER]" + fromUser.getName() + "has leaving us"));
+            users.forEach(user -> user.printMsg("[SERVER]" + fromUser.getName() + "has leaving us")); //Уведомление оставшихся
         } else {
             sendToServer(msg);
-            users.forEach(user -> user.printMsg(msg));
+            users.forEach(user -> user.printMsg(msg)); //Отправить всем
         }
     }
+    //Отключение юзера
     void drop(User user) {
         users.remove(user);
         user.printMsg("[SERVER]You are disconnected");

@@ -21,20 +21,23 @@ public class Client {
         } catch (IOException e) {
             printExcep(e);
         }
-        sendMsg("/name" + name);
-        thread = new Thread(() -> {
-            clientGUI.setClient(Client.this);
-            while (!thread.isInterrupted()) {
-                try {
-                    String msg = reader.readLine();
-                    if (msg == null) drop();
-                    else clientGUI.printMsg(msg);
-                } catch (IOException e) {
-                    printExcep(e);
+        if (socket != null) {
+            sendMsg("/name" + name);
+            thread = new Thread(() -> {
+                clientGUI.setClient(Client.this);
+                while (!thread.isInterrupted()) {
+                    try {
+                        String msg = reader.readLine();
+                        if (msg == null || msg.equals("/goOut")) {
+                            clientGUI.disconnect.doClick();
+                        } else clientGUI.printMsg(msg);
+                    } catch (IOException e) {
+                        printExcep(e);
+                    }
                 }
-            }
-        });
-        thread.start();
+            });
+            thread.start();
+        }
     }
 
     void sendMsg(String msg) {
@@ -54,15 +57,16 @@ public class Client {
                 reader.close();
             if (writer != null)
                 writer.close();
-            if (socket != null)
+            if (socket != null) {
                 socket.close();
+            }
         } catch (IOException e) {
+            printExcep(e);
             e.printStackTrace();
         }
     }
     void printExcep(Exception e) {
         String error = "[CLIENT]Exception: " + e.getMessage();
         clientGUI.printMsg(error);
-        e.printStackTrace();
     }
 }

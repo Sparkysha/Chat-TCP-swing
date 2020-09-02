@@ -10,7 +10,7 @@ public class ClientGUI extends JFrame {
     private final JTextField input = new JTextField();
     private final JButton send = new JButton("Send");
     private final JButton connect = new JButton("Connect");
-    private final JButton disconnect = new JButton("Disconnect");
+    final JButton disconnect = new JButton("Disconnect");
 
     private String ip;
     private int port;
