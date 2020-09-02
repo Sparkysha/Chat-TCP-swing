@@ -42,7 +42,7 @@ public class Server {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                sendToServer("[EXCEPTION]Thread of stop has been interrupt: " + e.getMessage());
             }
             if (users.isEmpty()) {
                 try {

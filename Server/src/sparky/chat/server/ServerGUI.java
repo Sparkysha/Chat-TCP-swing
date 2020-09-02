@@ -24,12 +24,13 @@ public class ServerGUI extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Server");
-        setVisible(true);
         setResizable(false);
+        setVisible(true);
 
         log.setEditable(false);
         log.setLineWrap(true);
-        add(log);
+        JScrollPane scrollPane = new JScrollPane(log);
+        add(scrollPane);
 
         portInput.setText("8585");
         ok.addActionListener(actionEvent -> {
@@ -55,7 +56,7 @@ public class ServerGUI extends JFrame {
     synchronized void printMsg(String msg) {
         SwingUtilities.invokeLater(() -> {
             log.append(msg + "\n");
-            log.setCaretPosition(log.getDocument().getLength());
+            //log.setCaretPosition(log.getDocument().getLength());
         });
     }
 }

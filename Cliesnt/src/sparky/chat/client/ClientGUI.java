@@ -3,6 +3,8 @@ package sparky.chat.client;
 import javax.swing.*;
 import java.awt.*;
 
+import static javax.swing.JScrollPane.*;
+
 public class ClientGUI extends JFrame {
     private final JTextArea log = new JTextArea();
     private final JPanel mainPanel = new JPanel();
@@ -34,12 +36,14 @@ public class ClientGUI extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Chat Client");
-        setVisible(true);
         setResizable(false);
+        setVisible(true);
+
 
         log.setEditable(false);
         log.setLineWrap(true);
-        add(log);
+        JScrollPane scrollPane = new JScrollPane(log);
+        add(scrollPane);
 
         ok.addActionListener(actionEvent -> {
             ip = ipInput.getText();
@@ -100,9 +104,6 @@ public class ClientGUI extends JFrame {
     }
 
     synchronized void printMsg(String msg) {
-        SwingUtilities.invokeLater(() -> {
-            log.append(msg + "\n");
-            log.setCaretPosition(log.getDocument().getLength());
-        });
+        SwingUtilities.invokeLater(() -> log.append(msg + "\n"));
     }
 }
