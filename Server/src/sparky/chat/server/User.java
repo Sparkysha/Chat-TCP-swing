@@ -44,7 +44,6 @@ public class User {
             writer.flush();
         } catch (IOException e) {
             server.sendToServer("[EXCEPTION]Write to user " + e.getMessage());
-            e.printStackTrace();
         }
     }
     //Закрытие сокета
