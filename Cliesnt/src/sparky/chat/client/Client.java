@@ -10,6 +10,7 @@ public class Client {
     private BufferedWriter writer;
     private final ClientGUI clientGUI;
     private String name;
+    private boolean serverIsStop = false;
 
     Client(String ip, int port, ClientGUI clientGUI, String name) {
         this.clientGUI = clientGUI;
@@ -28,7 +29,7 @@ public class Client {
                 while (!thread.isInterrupted()) {
                     try {
                         String msg = reader.readLine();
-                        if (msg == null || msg.equals("/goOut")) clientGUI.disconnect.doClick(); //Сервер отключился(ается)
+                        if (msg == null || msg.equals("/goOut")) serverIsStop = true; //Сервер отключился(ается)
                         if (msg.startsWith("/ru")) clientGUI.showUsers(msg.substring(3).replace( ": ", "\n")); //Список юзеров обновился
                         else clientGUI.printMsg(msg);
                     } catch (IOException e) {
@@ -37,6 +38,19 @@ public class Client {
                 }
             });
             thread.start();
+            new Thread(() -> {
+                while (true) { //Если сервер отключается (что бы не вызвать лишнее исключение)
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        printExcep(e);
+                    }
+                    if (serverIsStop) {
+                        clientGUI.disconnect.doClick();
+                        break;
+                    }
+                }
+            }).start();
         }
     }
 
