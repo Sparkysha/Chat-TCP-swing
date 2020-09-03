@@ -9,12 +9,9 @@ public class Client {
     private BufferedReader reader;
     private BufferedWriter writer;
     private final ClientGUI clientGUI;
-    private String name;
-    private boolean serverIsStop = false;
 
     Client(String ip, int port, ClientGUI clientGUI, String name) {
         this.clientGUI = clientGUI;
-        this.name = name;
         try {
             socket = new Socket(ip, port);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -22,6 +19,14 @@ public class Client {
         } catch (IOException e) {
             printExcep(e);
         }
+        Thread stopServer = new Thread(() -> { //Если сервер отключается (что бы не вызвать лишнее исключение)
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                printExcep(e);
+            }
+            clientGUI.disconnect.doClick();
+        });
         if (socket != null) {
             sendMsg("/name" + name); //Отправка имени
             thread = new Thread(() -> {
@@ -29,8 +34,8 @@ public class Client {
                 while (!thread.isInterrupted()) {
                     try {
                         String msg = reader.readLine();
-                        if (msg == null || msg.equals("/goOut")) serverIsStop = true; //Сервер отключился(ается)
-                        if (msg.startsWith("/ru")) clientGUI.showUsers(msg.substring(3).replace( ": ", "\n")); //Список юзеров обновился
+                        if (msg == null || msg.equals("/goOut")) stopServer.start(); //Сервер отключился(ается)
+                        else if (msg.startsWith("/ru")) clientGUI.showUsers(msg.substring(3).replace( ": ", "\n")); //Список юзеров обновился
                         else clientGUI.printMsg(msg);
                     } catch (IOException e) {
                         printExcep(e);
@@ -38,19 +43,6 @@ public class Client {
                 }
             });
             thread.start();
-            new Thread(() -> {
-                while (true) { //Если сервер отключается (что бы не вызвать лишнее исключение)
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        printExcep(e);
-                    }
-                    if (serverIsStop) {
-                        clientGUI.disconnect.doClick();
-                        break;
-                    }
-                }
-            }).start();
         }
     }
 
